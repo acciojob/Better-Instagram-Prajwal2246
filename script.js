@@ -1,39 +1,44 @@
-//your code here
 const images = document.querySelectorAll(".image");
 
-let draggedElement = null;
+let dragged = null;
 
-// Add ids dynamically (div1, div2, ...)
-images.forEach((img, index) => {
-  img.id = `div${index + 1}`;
+// Assign IDs drag1 → drag6
+images.forEach((div, index) => {
+  div.id = `drag${index + 1}`;
+
+  // create img inside each div from background-image
+  const bg = getComputedStyle(div).backgroundImage;
+  const url = bg.slice(5, -2); // remove url(" ")
+
+  const img = document.createElement("img");
+  img.src = url;
+  img.style.width = "100%";
+  img.style.height = "100%";
+
+  div.style.backgroundImage = "none";
+  div.appendChild(img);
 });
 
-// Drag start
-images.forEach(img => {
-  img.addEventListener("dragstart", function () {
-    draggedElement = this;
-    this.classList.add("selected");
+// Mouse-based drag logic
+images.forEach(div => {
+  div.addEventListener("mousedown", () => {
+    dragged = div;
   });
 
-  img.addEventListener("dragend", function () {
-    this.classList.remove("selected");
-    draggedElement = null;
-  });
-
-  img.addEventListener("dragover", function (e) {
-    e.preventDefault(); // REQUIRED for drop
-  });
-
-  img.addEventListener("drop", function () {
-    if (draggedElement !== this) {
-      swapBackground(draggedElement, this);
+  div.addEventListener("mouseup", function () {
+    if (dragged && dragged !== this) {
+      swapImages(dragged, this);
     }
+    dragged = null;
   });
 });
 
-// Swap background images
-function swapBackground(div1, div2) {
-  const temp = div1.style.backgroundImage;
-  div1.style.backgroundImage = div2.style.backgroundImage;
-  div2.style.backgroundImage = temp;
+// Swap <img> elements
+function swapImages(div1, div2) {
+  const img1 = div1.querySelector("img");
+  const img2 = div2.querySelector("img");
+
+  const tempSrc = img1.src;
+  img1.src = img2.src;
+  img2.src = tempSrc;
 }
