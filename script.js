@@ -1,36 +1,38 @@
 const images = document.querySelectorAll(".image");
+
   let dragged = null;
+  let target = null;
 
   images.forEach(img => {
     img.addEventListener("mousedown", mouseDown);
-    img.addEventListener("mouseup", mouseUp);
+    img.addEventListener("mouseenter", mouseEnter);
   });
+
+  document.addEventListener("mouseup", mouseUp);
 
   function mouseDown(e) {
     dragged = this;
     this.classList.add("selected");
   }
 
-  function mouseUp(e) {
+  function mouseEnter(e) {
     if (!dragged) return;
+    if (this !== dragged) {
+      target = this;
+    }
+  }
 
-    // element where mouse is released
-    const target = document.elementFromPoint(e.clientX, e.clientY);
+  function mouseUp() {
+    if (dragged && target) {
+      const draggedBg = getComputedStyle(dragged).backgroundImage;
+      const targetBg = getComputedStyle(target).backgroundImage;
 
-    if (
-      target &&
-      target.classList.contains("image") &&
-      target !== dragged
-    ) {
-      // read CSS background images
-      const draggedBg = window.getComputedStyle(dragged).backgroundImage;
-      const targetBg = window.getComputedStyle(target).backgroundImage;
-
-      // swap
       dragged.style.backgroundImage = targetBg;
       target.style.backgroundImage = draggedBg;
     }
 
-    dragged.classList.remove("selected");
+    if (dragged) dragged.classList.remove("selected");
+
     dragged = null;
+    target = null;
   }
