@@ -1,44 +1,42 @@
-const images = document.querySelectorAll(".image");
+const images = document.querySelectorAll("#parent .image");
+      let dragged = null;
 
-let dragged = null;
+      images.forEach((img) => {
+        img.addEventListener("dragstart", dragStart);
+        img.addEventListener("dragover", dragOver);
+        img.addEventListener("drop", drop);
+        img.addEventListener("dragend", dragEnd);
+      });
 
-// Assign IDs drag1 → drag6
-images.forEach((div, index) => {
-  div.id = `drag${index + 1}`;
+      function dragStart(e) {
+        dragged = this;
+        this.classList.add("selected");
+      }
 
-  // create img inside each div from background-image
-  const bg = getComputedStyle(div).backgroundImage;
-  const url = bg.slice(5, -2); // remove url(" ")
+      function dragOver(e) {
+        e.preventDefault(); // required to allow drop
+      }
 
-  const img = document.createElement("img");
-  img.src = url;
-  img.style.width = "100%";
-  img.style.height = "100%";
+      function drop(e) {
+        e.preventDefault();
 
-  div.style.backgroundImage = "none";
-  div.appendChild(img);
-});
+        if (dragged === this) return;
 
-// Mouse-based drag logic
-images.forEach(div => {
-  div.addEventListener("mousedown", () => {
-    dragged = div;
-  });
+        // ✅ Read background images from computed styles
+        const draggedBg = window.getComputedStyle(dragged).backgroundImage;
+        const targetBg = window.getComputedStyle(this).backgroundImage;
 
-  div.addEventListener("mouseup", function () {
-    if (dragged && dragged !== this) {
-      swapImages(dragged, this);
-    }
-    dragged = null;
-  });
-});
+        // Swap background images
+        dragged.style.backgroundImage = targetBg;
+        this.style.backgroundImage = draggedBg;
 
-// Swap <img> elements
-function swapImages(div1, div2) {
-  const img1 = div1.querySelector("img");
-  const img2 = div2.querySelector("img");
+        // Swap text labels
+        const tempText = dragged.innerText;
+        dragged.innerText = this.innerText;
+        this.innerText = tempText;
+      }
 
-  const tempSrc = img1.src;
-  img1.src = img2.src;
-  img2.src = tempSrc;
-}
+      function dragEnd() {
+        this.classList.remove("selected");
+        dragged = null;
+      }
