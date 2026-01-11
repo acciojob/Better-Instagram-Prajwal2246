@@ -1,38 +1,19 @@
-const images = document.querySelectorAll(".image");
+//your code here
+let dragElement=null
+document.addEventListener("dragstart",(e)=>{
+	dragElement=e.target
+})
+document.addEventListener("dragover",(e)=>{
+	e.preventDefault();
+})
+document.addEventListener("drop",(e)=>{
+	e.preventDefault();
+	let target=e.target;
 
-  let dragged = null;
-  let target = null;
-
-  images.forEach(img => {
-    img.addEventListener("mousedown", mouseDown);
-    img.addEventListener("mouseenter", mouseEnter);
-  });
-
-  document.addEventListener("mouseup", mouseUp);
-
-  function mouseDown(e) {
-    dragged = this;
-    this.classList.add("selected");
-  }
-
-  function mouseEnter(e) {
-    if (!dragged) return;
-    if (this !== dragged) {
-      target = this;
-    }
-  }
-
-  function mouseUp() {
-    if (dragged && target) {
-      const draggedBg = getComputedStyle(dragged).backgroundImage;
-      const targetBg = getComputedStyle(target).backgroundImage;
-
-      dragged.style.backgroundImage = targetBg;
-      target.style.backgroundImage = draggedBg;
-    }
-
-    if (dragged) dragged.classList.remove("selected");
-
-    dragged = null;
-    target = null;
-  }
+	if(target!=dragElement && target.parentElement.id=="parent"){
+			let temp=document.createElement("div");
+			target.replaceWith(temp);
+			dragElement.replaceWith(target);
+			temp.replaceWith(dragElement);
+	}
+})
